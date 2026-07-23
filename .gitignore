@@ -1,0 +1,12 @@
+.env
+
+.DS_Store
+.idea
+.vscode
+
+
+__pycache__/
+build/
+dist/
+wheels/
+*.py[oc]
