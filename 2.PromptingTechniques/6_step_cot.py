@@ -88,7 +88,13 @@ Roger has 5 tennis balls. He buys 2 more cans of tennis balls. Each can contains
 Please think step by step and emit the steps one by one. For each reply only emit the next step to be executed.
 """
 
-
+# [
+#   {"role": "system",    "content": SYSTEM_PROMPT},
+#   {"role": "user",      "content": "I have 3 boxes with 4 apples each. How many apples?"},
+#   {"role": "assistant", "content": '{"step_type": "THINKING", "content": "There are 3 boxes. boxes = 3."}'},
+#   {"role": "assistant", "content": '{"step_type": "THINKING", "content": "Each box has 4 apples. per_box = 4."}'},
+# ]
+#passing something like above to this function .
 def llm_json_reply(messages: list[dict]) -> str:
     provider = select_provider()
     client = build_client(provider)
@@ -100,9 +106,10 @@ def llm_json_reply(messages: list[dict]) -> str:
     }
 
     result = client.chat.completions.create(**kwargs)
-    return result.choices[0].message.content
+    return result.choices[0].message.content #plain string output
 
 
+#every step has the content and what type of step it is . 
 class CotStep(BaseModel):
     """A step in the CoT process."""
 
