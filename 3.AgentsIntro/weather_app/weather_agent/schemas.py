@@ -25,6 +25,7 @@ lookup_weather_schema = {
 
 TOOL_MENU = [lookup_weather_schema]
 
+#prepare an array of dictionaries that has the name and description 
 def tool_catalog() -> list[dict[str, str]]:
     return [
         {
