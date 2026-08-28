@@ -13,6 +13,7 @@ section = st.sidebar.radio("Section", [
     "4. Chat UI Preview"
 ])
 
+
 if section == "1. Text & Layout":
     st.header("Text & Layout")
     st.markdown(
@@ -77,6 +78,7 @@ elif section == "3. Session state":
         Session state allows you to store values that persist across runs.
         """
     )
+    
 
     # initialize click_count as 0
     if "click_count" not in st.session_state:

@@ -2,7 +2,7 @@ import requests
 
 from weather_agent.config import GEOCODE_URL, WEATHER_REQUEST_TIMEOUT, FORECAST_URL
 
-
+#dictionary  for the weather codes 
 WEATHER_CODES: dict[int, str] = {
     0: "clear sky",
     1: "mainly clear",
@@ -24,17 +24,21 @@ WEATHER_CODES: dict[int, str] = {
     96: "thunderstorm with hail",
 }
 
+#this location paramter will  be fetched from the llm and then the python code will make the tool call 
+#this is our tool 
 def lookup_weather(location: str) -> str:
     try:
+        #gives us the latitude and longitude for a string . 
         geo = requests.get(
             GEOCODE_URL,
+            #location passed as request param
             params={"name": location, "count": 1},
             timeout=WEATHER_REQUEST_TIMEOUT,
         )
 
         geo.raise_for_status()
         matches = geo.json().get("results")
-
+        print( matches[0])
         if not matches:
             return f"We couldn't find a place called {location}"
         
@@ -52,7 +56,6 @@ def lookup_weather(location: str) -> str:
         )
 
         forecast.raise_for_status()
-
         current = forecast.json().get("current")
 
         temperature = current.get("temperature_2m")
@@ -60,7 +63,6 @@ def lookup_weather(location: str) -> str:
         wind_speed = current.get("wind_speed_10m")
 
         sky = WEATHER_CODES.get(weather_code, f"weather code {weather_code}")
-
         wind_note = f", wind {wind_speed} km/h" if wind_speed else ""
 
         return f"The current temperature in {label} is {temperature}°C, the sky is {sky}{wind_note}."

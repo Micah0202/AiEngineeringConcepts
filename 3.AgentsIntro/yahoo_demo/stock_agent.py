@@ -25,6 +25,7 @@ client = OpenAI(
     api_key=os.getenv("OPEN_AI_KEY")
 )
 
+#tool  to  get latest stock price ,
 TOOL_DEFINITION = [
     {
         "type": "function",
@@ -44,7 +45,7 @@ the correct ticker symbol. After receiving the result, present the information i
 and friendly manner.
 
 IMPORTANT: Always call the get_stock_price tool with the correct ticker symbol. Don't pick up
-the price from our old conversations, as the price keeps on changing. Donot assume the price
+the price from our old conversations, as the price keeps on changing. Do not assume the price
 from previous conversations. Always whenever a price for a stock is asked, we need to call the
 relevant tools again.
 
@@ -155,9 +156,11 @@ TOOL_ARG_MODELS: dict[str, type[BaseModel]] = {
     "get_stock_price": GetStockPriceArgs,
 }
 
+#main agent logic
 def run_agent(user_query: str) -> None:
     """Single turn agentic loop with chain of thought reasoning"""
 
+#INITIALLY populate the messages array with all  this context already 
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},
         *FEW_SHOT_EXAMPLES,
@@ -168,17 +171,18 @@ def run_agent(user_query: str) -> None:
     print(f"User: {user_query}")
     print(f"{'='*60}\n")
 
-
+    #loop  thats keep  going until  the models stops asking for tools ,  look  at finish_reason .
     while True:
         response = client.chat.completions.create(
             model="gpt-4o-mini",
-            messages=messages,
+            messages=messages, #full history resent every iteration 
             tools=TOOL_DEFINITION,
         )
 
         choice = response.choices[0]
         assistant_msg = choice.message
 
+        
         messages.append(assistant_msg)
 
         # print(assistant_msg, assistant_msg.tool_calls)
@@ -186,6 +190,7 @@ def run_agent(user_query: str) -> None:
         if assistant_msg.content:
             print(f"Assistant (thinking): {assistant_msg.content}\n")
 
+        #nothing more the llm wants to tell us  
         if choice.finish_reason == "stop":
             break
 
@@ -194,6 +199,7 @@ def run_agent(user_query: str) -> None:
 
         for tool_call in assistant_msg.tool_calls:
             fn_name = tool_call.function.name
+            #json.loads makes it a dict . 
             raw_args = json.loads(tool_call.function.arguments)
 
             arg_model = TOOL_ARG_MODELS[fn_name]
