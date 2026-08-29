@@ -27,7 +27,43 @@ from pydantic import BaseModel, Field
 # =============================================================================
 
 
-class ReadFileArgs(BaseModel):
+class ToolArgs(BaseModel):
+    """
+    Base class every tool's arguments inherit from.
+
+    ---------------------------------------------------------------------------
+    ★ THIS IS HOW WE FORCE THE "REASON" STEP OF ReAct.
+
+    The problem: gpt-4o-mini almost never writes text alongside a tool call.
+    message.content comes back as None, so the model's thinking is invisible -
+    and "Reason -> Act" collapses into just "Act". Telling it to explain itself
+    in the system prompt does not reliably work; we tried, and it ignored it.
+
+    The fix: make the reasoning part of the tool's ARGUMENTS. The model cannot
+    call a tool without filling in every required field, so it now has to state
+    why - not because we asked nicely, but because the request is structurally
+    invalid otherwise.
+
+    agent.py strips this field out before calling the actual Python function,
+    so the tools themselves never see it and keep their clean signatures.
+
+    The general lesson: when you need a model to do something reliably, prefer
+    a structure that makes not doing it impossible over an instruction that
+    asks it to comply.
+    ---------------------------------------------------------------------------
+    """
+
+    reasoning: str = Field(
+        ...,
+        description=(
+            "REQUIRED. One short sentence, in plain English, explaining what "
+            "you have learned so far and why you are calling this tool now. "
+            "Example: 'The workspace is empty, so I will create main.py first.'"
+        ),
+    )
+
+
+class ReadFileArgs(ToolArgs):
     path: str = Field(
         ...,
         description=(
@@ -37,7 +73,7 @@ class ReadFileArgs(BaseModel):
     )
 
 
-class WriteFileArgs(BaseModel):
+class WriteFileArgs(ToolArgs):
     path: str = Field(
         ...,
         description=(
@@ -51,7 +87,7 @@ class WriteFileArgs(BaseModel):
     )
 
 
-class EditFileArgs(BaseModel):
+class EditFileArgs(ToolArgs):
     path: str = Field(..., description="Path to the existing file to change.")
     old_string: str = Field(
         ...,
@@ -65,11 +101,11 @@ class EditFileArgs(BaseModel):
     new_string: str = Field(..., description="The text to replace it with.")
 
 
-class DeleteFileArgs(BaseModel):
+class DeleteFileArgs(ToolArgs):
     path: str = Field(..., description="Path to the file to delete.")
 
 
-class ListFilesArgs(BaseModel):
+class ListFilesArgs(ToolArgs):
     # A default makes this optional in the generated schema, so the model can
     # call list_files with no arguments at all.
     path: str = Field(
@@ -78,7 +114,7 @@ class ListFilesArgs(BaseModel):
     )
 
 
-class RunCommandArgs(BaseModel):
+class RunCommandArgs(ToolArgs):
     command: str = Field(
         ...,
         description=(
