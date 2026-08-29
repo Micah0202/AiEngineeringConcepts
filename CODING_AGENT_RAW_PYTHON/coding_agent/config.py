@@ -25,8 +25,15 @@ PROJECT_ROOT = Path(__file__).parent.parent
 #   security.py turns this single value into an enforced boundary.
 WORKSPACE_DIR = PROJECT_ROOT / "workspace"
 
-# Where the Jinja prompt templates live (used from Step 6 onwards).
-PROMPTS_DIR = PROJECT_ROOT / "coding_agent" / "prompts"
+# Where the Jinja prompt templates live.
+#
+# Note the folder is called "templates", NOT "prompts". There is already a
+# module named prompts.py, and a folder with the same name sitting beside it
+# creates an import ambiguity: Python has to decide whether `prompts` means the
+# file or the directory. It resolves in our favour by accident of precedence,
+# but relying on that is asking for a confusing bug later. Different things get
+# different names.
+TEMPLATES_DIR = PROJECT_ROOT / "coding_agent" / "templates"
 
 # Make sure the sandbox exists before anything tries to use it.
 # exist_ok=True means "do nothing if it is already there" (no error on re-run).
