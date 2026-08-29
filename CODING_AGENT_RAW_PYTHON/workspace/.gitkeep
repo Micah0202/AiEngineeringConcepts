@@ -1,0 +1,4 @@
+# This file exists only so git tracks the empty workspace/ folder.
+#
+# Everything the agent creates lands in here. It is the ONLY directory the
+# agent is allowed to touch - see coding_agent/security.py.
