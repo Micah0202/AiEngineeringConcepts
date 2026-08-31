@@ -1,6 +1,7 @@
 from tools.paths import resolve_work_path
 from langchain.tools import tool
 
+#docstring is mandatory for tool  description
 @tool
 def read_file(path: str) -> str:
     """

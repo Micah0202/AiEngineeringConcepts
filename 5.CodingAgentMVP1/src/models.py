@@ -29,7 +29,8 @@ def select_provider() -> Provider:
     for provider in PROVIDERS:
         if os.getenv(provider.env_var):
             return provider
-    
+
+    #iterated thgrough all providers an was unable to  find api key
     raise RuntimeError("No provider found")
 
 def build_chat_model() -> tuple[ChatOpenAI, Provider]:
