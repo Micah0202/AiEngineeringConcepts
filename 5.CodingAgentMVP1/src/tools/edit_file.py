@@ -23,7 +23,7 @@ def edit_file(path: str, old_str: str, new_str: str) -> str:
     if not path or old_str == new_str:
         return "Error: Invalid input"
 
-    old_str = prepare_file_content(path, old_str)
+    old_str = prepare_file_content(path, old_str) #will remove the backticks and other special characters etc 
     new_str = prepare_file_content(path, new_str)
 
     try:

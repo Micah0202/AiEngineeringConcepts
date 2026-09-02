@@ -9,7 +9,7 @@ def write_file(path: str, content: str) -> str:
     Create or overwrite a UTF-8 text file in the working directory.
 
     Works for any text file (.js, .java, .py etc).
-    `contet` is the full file body with real newline characters between lines. Do not wrap it 
+    `content` is the full file body with real newline characters between lines. Do not wrap it 
     in markdown fence. Do not encode line breads as the two-character sequence backslash-n.
 
     Args:
